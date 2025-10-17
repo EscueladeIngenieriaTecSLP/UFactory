@@ -52,11 +52,11 @@
     </div>
 
     <!-- Escena AR -->
-    <a-scene embedded arjs>
+    <a-scene embedded arjs vr-mode-ui="enabled: false">
       <a-assets>
-        <!-- IMPORTANTE: ya no lleva muted -->
-        <video 
-          id="Ufactory video edit"
+        <!-- IMPORTANTE: evita espacios en el id -->
+        <video
+          id="ufactoryVideo"
           src="Ufactory video edit.mp4"
           preload="auto"
           playsinline
@@ -65,9 +65,10 @@
         </video>
       </a-assets>
 
+      <!-- Tu marcador -->
       <a-marker type="pattern" url="marker1.patt" id="marker">
         <a-video
-          src="#Ufactory video edit"
+          src="#ufactoryVideo"
           width="1"
           height="2"
           position="0 0 0"
@@ -76,7 +77,7 @@
         </a-video>
 
         <a-text
-          value="UR3: 6 DOF | 3kg payload | 500mm reach"
+          value="UFactory | Video demo"
           position="0 1.2 0"
           rotation="-90 0 0"
           scale="0.4 0.4 0.4"
@@ -88,12 +89,12 @@
     </a-scene>
 
     <script>
-      const video = document.getElementById('ur3video');
+      const video = document.getElementById('ufactoryVideo');
       const marker = document.getElementById('marker');
       const overlay = document.getElementById('overlay');
       const startBtn = document.getElementById('startBtn');
 
-      // Flags necesarios
+      // Flags recomendados para móviles
       video.playsInline = true;
       video.setAttribute('playsinline', '');
       video.setAttribute('webkit-playsinline', '');
@@ -109,16 +110,18 @@
         }
       });
 
-      // Al detectar el marcador, aseguramos que siga reproduciendo
+      // Al detectar el marcador, reproducir si está en pausa (p. ej., al volver al marcador)
       marker.addEventListener('markerFound', () => {
-        if (video.paused) {
-          video.play().catch(err => console.warn('Error al reproducir:', err));
+        if (!overlay || overlay.style.display === 'none') {
+          if (video.paused) {
+            video.play().catch(err => console.warn('Error al reproducir:', err));
+          }
         }
       });
 
       // Pausa el video al perder el marcador
       marker.addEventListener('markerLost', () => {
-        video.pause();
+        if (!video.paused) video.pause();
       });
     </script>
   </body>
